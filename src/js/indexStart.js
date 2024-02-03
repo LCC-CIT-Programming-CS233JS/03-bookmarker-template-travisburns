@@ -19,6 +19,56 @@
     - addBookmark-   allows the user to add a new bookmark to the list.  It is called
                   by the click event handler for the add button on the page.
 */
+
+class BookMarker {
+    
+    constructor() {
+
+        try {
+            this.bookmarks = JSON.parse(localStorage["bookmark"])
+        }
+        catch {
+            this.bookmarks =  [
+                {
+                    description: "Really cool site for open source photos", 
+                    image: "",
+                    link: "https://www.pexels.com/", 
+                    title: "https://www.pexels.com/"
+                },
+            ]
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* 
 Setup your development environment
     -   clone the repository with the starting files from github
@@ -46,14 +96,7 @@ Create a class called Bookmarker
         -   Create an instance variable called bookmarks.
         -   Try to load the bookmarks from local storage.  If there's nothing in local storage 
             set it equal to an object literal that contains at least 2 bookmarks
-            [
-                {
-                    description: "Really cool site for open source photos", 
-                    image: "",
-                    link: "https://www.pexels.com/", 
-                    title: "https://www.pexels.com/"
-                },
-            ]
+           
         -   call bind on addBookmark and addEventHandlers
         -   call the method fillBookmarksList
 
@@ -79,6 +122,10 @@ Create a class called Bookmarker
         -   Call the method addEventHandlers to allow the user to delete each of the bookmarks
         );
     END OF PART 1 - TEST AND DEBUG YOUR CODE - YOU SHOULD SEE HARDCODED BOOKMARKS YOUR ON PAGE
+
+
+
+
 
     PART 2 - Delete a bookmark
     -   Finish the deleteBookmark method.  It has 2 parameters, index and event
