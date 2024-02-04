@@ -1,57 +1,118 @@
-/*  Overview
-    This application simulates an electronic bookmark list.  Users can add and delete
-    bookmarks from the list. The list of bookmarks is stored on the user's machine in local storage 
-    so that the bookmarks persist over time.
-
-    The app is encapsulated in an ES6 style class.  
-    
-    The class has the following instance variables declared in the constructor:
-    - bookmarks - an array of bookmarks.  Each bookmark has a description, image, link and title property.
-
-    The class has the following methods
-    - fillBookmarks - displays the bookmarks on the page.  It is called in the constructor
-                  and whenever a bookmark is changed in any way.  It calls a helper method
-                  generateBookmarkHtml to generate the html for an individual bookmark object.
-                  It also calls a helper method addEventHandlers to add the event handlers
-                  that allow deleting of a bookmark
-    - deleteBookmark - removes a bookmark from the list of bookmark.  It is called by 
-                  the click event handler for the trash can icon for each bookmark.
-    - addBookmark-   allows the user to add a new bookmark to the list.  It is called
-                  by the click event handler for the add button on the page.
-*/
-
-class BookMarker {
-    
+class Bookmarker {
     constructor() {
-
+        // Try to load bookmarks from local storage
         try {
-            this.bookmarks = JSON.parse(localStorage["bookmark"])
-        }
-        catch {
-            this.bookmarks =  [
+            this.bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+        } catch (error) {
+            console.error("Error loading bookmarks from local storage:", error);
+            // If there's an error, set bookmarks to default values
+            this.bookmarks = [
                 {
-                    description: "Really cool site for open source photos", 
+                    description: "Really cool site for open source photos",
                     image: "",
-                    link: "https://www.pexels.com/", 
-                    title: "https://www.pexels.com/"
+                    link: "https://www.pexels.com/",
+                    title: "Pexels",
                 },
-            ]
+                {
+                    description: "GitHub",
+                    image: "",
+                    link: "https://www.github.com/",
+                    title: "GitHub",
+                },
+            ];
         }
 
+        // Bind methods
+        this.addBookmark = this.addBookmark.bind(this);
+        this.addEventHandlers = this.addEventHandlers.bind(this);
+
+        // Initial fill of bookmarks list
+        this.fillBookmarksList();
+
+        // Add event handlers
+        this.addEventHandlers();
+
+        // Add onsubmit handler to the form
+        const bookmarkForm = document.querySelector(".bookmark-form");
+        bookmarkForm.addEventListener("submit", this.addBookmark);
+    }
+
+    generateBookmarkHtml(bookmark) {
+        return `
+            <a href="${bookmark.link}" target="_blank" class="bookmark">
+                <div class="img" style="background-image:url('./images/bookmark.png')">&nbsp;</div>
+                <div class="title">${bookmark.title}<br>${bookmark.description}</div>
+                <div><i name="deleteBookmark" class="bi-trash delete-icon"></i></div>
+            </a>`;
+    }
+
+    fillBookmarksList() {
+        // Save bookmarks to local storage
+        localStorage.setItem("bookmarks", JSON.stringify(this.bookmarks));
+
+        // Generate HTML for all bookmarks
+        const bookmarkHtml = this.bookmarks.reduce((html, bookmark) => html += this.generateBookmarkHtml(bookmark), '');
+
+        // Set contents of the bookmarks-list element on the page
+        document.querySelector(".bookmarks-list").innerHTML = bookmarkHtml;
+
+        // Call the method addEventHandlers to allow the user to delete each of the bookmarks
+        this.addEventHandlers();
+    }
+
+    addBookmark(event) {
+        // Prevent the form from being submitted (default behavior)
+        event.preventDefault();
+
+        // Get values from the form
+        const url = document.getElementById("url").value;
+        const description = document.getElementById("description").value;
+
+        // Create a new bookmark object
+        const newBookmark = {
+            description: description,
+            image: "", // You may add logic to fetch image later
+            link: url,
+            title: url, // Assuming title is the same as the URL for now
+        };
+
+        // Add the new bookmark to the list
+        this.bookmarks.push(newBookmark);
+
+        // Call fillBookmarksList
+        this.fillBookmarksList();
+
+        // Clear the form on the UI
+        document.getElementById("url").value = "";
+        document.getElementById("description").value = "";
+    }
+
+    addEventHandlers() {
+        // Get all delete icons
+        const deleteIcons = document.getElementsByName("deleteBookmark");
+
+        // Add click event for each delete icon
+        for (let i = 0; i < deleteIcons.length; i++) {
+            deleteIcons[i].addEventListener("click", this.deleteBookmark.bind(this, i));
+        }
+    }
+
+    deleteBookmark(index, event) {
+        // Prevent the default action of the anchor tag
+        event.preventDefault();
+
+        // Delete the bookmark from the list based on the index
+        this.bookmarks.splice(index, 1);
+
+        // Call fillBookmarksList
+        this.fillBookmarksList();
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
+// Initialize Bookmarker on window load
+window.onload = () => {
+    const bookmarker = new Bookmarker();
+};
 
 
 
