@@ -22,7 +22,7 @@ class Bookmarker {
             ];
         }
 
-        // Bind methods
+       
         this.addBookmark = this.addBookmark.bind(this);
         this.addEventHandlers = this.addEventHandlers.bind(this);
 
@@ -71,9 +71,9 @@ class Bookmarker {
         // Create a new bookmark object
         const newBookmark = {
             description: description,
-            image: "", // You may add logic to fetch image later
+            image: "", 
             link: url,
-            title: url, // Assuming title is the same as the URL for now
+            title: url, 
         };
 
         // Add the new bookmark to the list
