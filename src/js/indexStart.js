@@ -22,12 +22,21 @@ class Bookmarker {
             ];
         }
 
-       
+       this.body = document.body;
+       this.overlay = document.querySelector('.overlay');
+       this.bookmarksList = document.querySelector('.bookmarks-list');
+       this.bookmarkForm = document.querySelector('.bookmark-form');
+       this.bookmarkUrl = this.bookmarkForm.querySelector('#url');
+       this.bookmarkDesc = this.bookmarkForm.querySelector('#description')
+        this.bookmarks = JSON.parse(localStorage.getItem('bookmarks'))
+        this.appUrl = 'https://opengraph.io/api/1.1/site';
+        this.appId = 'd967f756-b6ca-49ae-ae37-f9f1b644c0f7'
+
         this.addBookmark = this.addBookmark.bind(this);
         this.addEventHandlers = this.addEventHandlers.bind(this);
 
         // Initial fill of bookmarks list
-        this.fillBookmarksList();
+        this.fillBookmarksList(this.bookmarks);
 
         // Add event handlers
         this.addEventHandlers();
@@ -40,7 +49,7 @@ class Bookmarker {
     generateBookmarkHtml(bookmark) {
         return `
             <a href="${bookmark.link}" target="_blank" class="bookmark">
-                <div class="img" style="background-image:url('./images/bookmark.png')">&nbsp;</div>
+                <div class="img" style="background-image:url('${bookmark.image}')">&nbsp;</div>
                 <div class="title">${bookmark.title}<br>${bookmark.description}</div>
                 <div><i name="deleteBookmark" class="bi-trash delete-icon"></i></div>
             </a>`;
@@ -65,22 +74,28 @@ class Bookmarker {
         event.preventDefault();
 
         // Get values from the form
-        const url = document.getElementById("url").value;
+        const urlForHref = document.querySelector('#url').value;
+        const url = encodeURIComponent(urlForHref);
         const description = document.getElementById("description").value;
-
-        // Create a new bookmark object
-        const newBookmark = {
-            description: description,
-            image: "", 
-            link: url,
-            title: url, 
-        };
-
-        // Add the new bookmark to the list
-        this.bookmarks.push(newBookmark);
-
-        // Call fillBookmarksList
-        this.fillBookmarksList();
+        fetch(`${this.appUrl}/${url}?app_id=${this.appId}`)
+            .then (response => response.json())
+            .then(data => {
+                console.log('API Response:', data);
+                const bookmark = {
+                    title: data.hybridGraph.title,
+                    image: data.hybridGraph.image,
+                    link: urlForHref,
+                    description: description
+                };
+                this.bookmarks.push(bookmark);
+                this.fillBookmarksList(this.bookmarks);
+                document.querySelector('.bookmark-form').reset();
+            })
+            .catch(error => {
+                console.log('there was a problem getting info!')
+            })
+            ;
+     
 
         // Clear the form on the UI
         document.getElementById("url").value = "";
