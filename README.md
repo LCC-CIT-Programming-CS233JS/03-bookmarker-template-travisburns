@@ -56,9 +56,3 @@ This application is a bookmark manager that allows users to save and organize th
 5. Add new bookmarks using the form at the top
 6. Click the trash icon to delete bookmarks
 
-## Future Improvements
-- Implement bookmark categories or tags
-- Add search functionality
-- Integrate with a browser extension for easier bookmarking
-- Implement user accounts for cloud storage of bookmarks
-
